@@ -1,13 +1,13 @@
 package com.example.demo.data.repository;
 
 import com.example.demo.dto.usuario.UsuarioGet;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import com.example.demo.data.entity.UsuarioEntity;
 import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.repository.query.Param;
-
-import java.util.List;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
@@ -46,7 +46,12 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
         u.data_nascimento as dataNascimento
             from usuario u 
                 where u.ativo = true
-        """)
-    List<UsuarioGet> findAllNative();
+        """,
+    countQuery = """
+        select count(*) from usuario u 
+                where u.ativo = true
+    """
+    )
+    Page<UsuarioGet> findAllNative(Pageable pageable);
 
 }

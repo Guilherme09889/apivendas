@@ -1,15 +1,15 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.usuario.UsuarioGet;
+import com.example.demo.dto.usuario.UsuarioPost;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.data.entity.UsuarioEntity;
 import com.example.demo.data.repository.UsuarioRepository;
-import com.example.demo.dto.usuario.UsuarioPost;
 
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class UsuarioService {
@@ -52,22 +52,14 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
-    public List<UsuarioGet> findAllNative(){
-        List<UsuarioEntity> users = userRepo.findAll();
-            if(users.isEmpty()){
-                throw new RuntimeException("Nenhum usuario encontrado");
-            }
-        return users.stream().map(user -> new UsuarioGet(
-                user.getName(),
-                user.getCpf(),
-                user.getCep(),
-                user.getTelefone(),
-                user.getEmail(),
-                user.getNacionalidade(),
-                user.getEstadoCivil(),
-                user.getDataNascimento()
-        )).toList();
+    public Page<UsuarioGet> findAllNative(Pageable pageable){
+        Page<UsuarioGet> users = userRepo.findAllNative(pageable);
+        if(users.isEmpty()){
+            throw new RuntimeException("Nenhum usuario encontrado");
         }
+        return users;
+
+    }
 
 
 

@@ -1,12 +1,14 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.usuario.UsuarioGet;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
 import com.example.demo.dto.usuario.UsuarioPost;
 import com.example.demo.service.UsuarioService;
-import java.util.List;
+
 
 import jakarta.validation.Valid;
 
@@ -28,8 +30,8 @@ public class UsuarioController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<UsuarioGet> listarTodos(){
-        return userService.findAllNative();
+    public Page<UsuarioGet> listarTodos(@PageableDefault(size = 10, page = 0, sort = "id") Pageable pageable) {
+        return userService.findAllNative(pageable);
     }
 
 
