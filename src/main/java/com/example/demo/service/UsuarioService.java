@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.usuario.UsuarioGet;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.data.entity.UsuarioEntity;
@@ -7,6 +8,8 @@ import com.example.demo.data.repository.UsuarioRepository;
 import com.example.demo.dto.usuario.UsuarioPost;
 
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class UsuarioService {
@@ -31,6 +34,11 @@ public class UsuarioService {
             throw new RuntimeException("Email já existe");
         }
 
+        Boolean telefoneExiste = userRepo.existsByTelNative(userPost.telefone());
+        if(telefoneExiste == true){
+            throw new RuntimeException("Telefone ja cadastrado");
+        }
+
         UsuarioEntity newUser = new UsuarioEntity();
         newUser.setName(userPost.name());
         newUser.setCpf(userPost.cpf());
@@ -42,6 +50,25 @@ public class UsuarioService {
         newUser.setDataNascimento(userPost.dataNascimento());
         userRepo.save(newUser);
     }
+
+    @Transactional(readOnly = true)
+    public List<UsuarioGet> findAllNative(){
+        List<UsuarioEntity> users = userRepo.findAll();
+            if(users.isEmpty()){
+                throw new RuntimeException("Nenhum usuario encontrado");
+            }
+        return users.stream().map(user -> new UsuarioGet(
+                user.getName(),
+                user.getCpf(),
+                user.getCep(),
+                user.getTelefone(),
+                user.getEmail(),
+                user.getNacionalidade(),
+                user.getEstadoCivil(),
+                user.getDataNascimento()
+        )).toList();
+        }
+
 
 
 }

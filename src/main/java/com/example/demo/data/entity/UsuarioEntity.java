@@ -12,8 +12,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
-
-
 @Entity
 @Table(name  = "usuario")
 @Getter
@@ -39,25 +37,13 @@ public class UsuarioEntity {
     @Column(name = "email", nullable = false, length = 50, unique = true)
     private String email;
 
-    @Column(name = "nacionalidade", length = 50, nullable = false)
-    private String nacionalidade;
-
-    @PrePersist
-    public void aplicarNacionalidadeDefautl(){
-        if(this.nacionalidade == null || this.nacionalidade.isEmpty()){
-            this.nacionalidade = "Não informado";
-        }
-    }
+    @Column(name = "nacionalidade", length = 50, nullable = false) 
+    @ColumnDefault("Não informado") //default na coluna do banco
+    private String nacionalidade = "Não informado"; //default no objeto java
 
     @Column(name = "estado_civil", length = 20, nullable = false)
-    private String estadoCivil;
-
-    @PrePersist
-    public void aplicarEstadoCivilDefault(){
-        if(this.estadoCivil == null || this.estadoCivil.isEmpty()){
-            this.estadoCivil = "Não informado";
-        }
-    }
+    @ColumnDefault("Não informado")
+    private String estadoCivil = "Não informado";
 
     @Column(name = "data_nascimento", nullable = false)
     private LocalDate dataNascimento;
@@ -65,6 +51,16 @@ public class UsuarioEntity {
     @Column(name = "ativo", nullable = false)
     @ColumnDefault("true")
     private Boolean ativo = true;
+
+    @PrePersist //default na hora de salvar via jpa
+    public void aplicarNacionalidadeDefautl(){
+        if(this.nacionalidade == null || this.nacionalidade.isEmpty()){ 
+            this.nacionalidade = "Não informado";
+        }
+        if(this.estadoCivil == null || this.estadoCivil.isEmpty()){
+            this.estadoCivil = "Não informado";
+        }
+    }
 
     public UsuarioEntity(){}
 
