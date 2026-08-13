@@ -1,16 +1,15 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.usuario.UsuarioGet;
+import com.example.demo.dto.usuario.UsuarioPatch;
+import com.example.demo.dto.usuario.UsuarioPost;
+import com.example.demo.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import com.example.demo.dto.usuario.UsuarioPost;
-import com.example.demo.service.UsuarioService;
-
-
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -34,5 +33,10 @@ public class UsuarioController {
         return userService.findAllNative(pageable);
     }
 
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void atualizarUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioPatch userPatch) {
+        userService.atualizarUsuario(id, userPatch);
+    }
 
 }
