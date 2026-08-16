@@ -39,4 +39,10 @@ public class UsuarioController {
         userService.atualizarUsuario(id, userPatch);
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletarUsuario(@PathVariable Long id) {
+        userService.deletarUsuario(id);
+    }
+
 }

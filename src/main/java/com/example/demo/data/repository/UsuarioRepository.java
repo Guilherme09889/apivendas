@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-
 import java.util.Optional;
 
 @Repository
@@ -38,6 +37,12 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
         """)
     boolean existsByTelNative(@Param("telefone") String telefone);
 
+    @NativeQuery(value = """
+    select exists(
+        select 1 from usuario
+        where id = :id and ativo = true)
+    """)
+    boolean existsByIdNative(@Param("id") long id);
 
     @NativeQuery(value = """
         select u.name,
@@ -93,6 +98,12 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
                              @Param("nacionalidade") String nacionalidade,
                              @Param("estadoCivil") String estadoCivil);
 
-
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @NativeQuery(value = """
+        update usuario
+        set ativo = false
+        where id = :id and ativo = true
+    """)
+    int desativarUsuarioNativo(@Param("id") Long id);
 
 }

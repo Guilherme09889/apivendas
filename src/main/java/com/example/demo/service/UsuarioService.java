@@ -123,5 +123,15 @@ public class UsuarioService {
 
     }
 
+    @Transactional
+    public void deletarUsuario(Long id){
+
+        int linhasAfetadas = userRepo.desativarUsuarioNativo(id);
+        if (linhasAfetadas == 0) {
+            throw new RuntimeException("Usuario não encontrado");
+        }
+
+    }
+
 
 }
