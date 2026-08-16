@@ -45,6 +45,13 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
     boolean existsByIdNative(@Param("id") long id);
 
     @NativeQuery(value = """
+    select exists(
+        select 1 from usuario
+        where id = :id and ativo = false)
+    """)
+    boolean existsByIdNegativoNative(@Param("id") long id);
+
+    @NativeQuery(value = """
         select u.name,
         u.cpf,
         u.cep,
@@ -52,7 +59,8 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
         u.email,
         u.nacionalidade,
         u.estado_civil as estadoCivil,
-        u.data_nascimento as dataNascimento
+        u.data_nascimento as dataNascimento,
+        u.ativo
             from usuario u 
                 where u.ativo = true
         """,
@@ -105,5 +113,13 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
         where id = :id and ativo = true
     """)
     int desativarUsuarioNativo(@Param("id") Long id);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @NativeQuery(value = """
+        update usuario
+            set ativo = true
+            where id = :id and ativo = false
+    """)
+    int ativarUsuarioNativo(@Param("id") Long id);
 
 }

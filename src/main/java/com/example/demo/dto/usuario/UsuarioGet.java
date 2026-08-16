@@ -10,5 +10,6 @@ public record UsuarioGet(
     String email,
     String nacionalidade,
     String estadoCivil,
-    LocalDate dataNascimento
+    LocalDate dataNascimento,
+    boolean ativo
 ) {}

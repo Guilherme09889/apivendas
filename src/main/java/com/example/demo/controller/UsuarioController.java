@@ -45,4 +45,10 @@ public class UsuarioController {
         userService.deletarUsuario(id);
     }
 
+    @PatchMapping("/ativar/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void ativarUsuario(@PathVariable Long id) {
+        userService.recuperarContaDesativada(id);
+    }
+
 }

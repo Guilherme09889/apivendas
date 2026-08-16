@@ -120,7 +120,6 @@ public class UsuarioService {
         estadoCivil = estadoCivil == null ? user.estadoCivil() : estadoCivil;
 
         userRepo.updateUsuarioNative(id, nome, cpf, cep, telefone, email, nacionalidade, estadoCivil);
-
     }
 
     @Transactional
@@ -130,8 +129,15 @@ public class UsuarioService {
         if (linhasAfetadas == 0) {
             throw new RuntimeException("Usuario não encontrado");
         }
-
     }
 
+    @Transactional
+    public void recuperarContaDesativada(Long id){
+        boolean usuarioExiste = userRepo.existsByIdNegativoNative(id);
+        if(usuarioExiste == false){
+            throw new RuntimeException("Usuario não encontrado");
+        }
+        userRepo.ativarUsuarioNativo(id);
+    }
 
 }
