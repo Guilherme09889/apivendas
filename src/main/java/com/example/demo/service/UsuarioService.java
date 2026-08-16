@@ -140,4 +140,11 @@ public class UsuarioService {
         userRepo.ativarUsuarioNativo(id);
     }
 
+    @Transactional(readOnly = true)
+    public UsuarioGet fifByIdNative(Long id){
+        UsuarioGet user = userRepo.findaByIdNative(id)
+                .orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
+        return user;
+    }
+
 }

@@ -122,4 +122,19 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
     """)
     int ativarUsuarioNativo(@Param("id") Long id);
 
+    @NativeQuery(value = """
+        select u.name as name,
+        u.cpf as cpf,
+        u.cep as cep,
+        u.telefone as telefone,
+        u.email as email,
+        u.nacionalidade as nacionalidade,
+        u.estado_civil as estadoCivil,
+        u.data_nascimento as dataNascimento,
+        u.ativo as ativo
+            from usuario u 
+                where u.id = :id and u.ativo = true
+        """)
+    Optional<UsuarioGet> findaByIdNative(@Param("id") Long id);
+
 }

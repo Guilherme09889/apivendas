@@ -33,6 +33,12 @@ public class UsuarioController {
         return userService.findAllNative(pageable);
     }
 
+    @GetMapping("user/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public UsuarioGet buscarUsuarioPorId(@PathVariable Long id) {
+        return userService.fifByIdNative(id);
+    }
+
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void atualizarUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioPatch userPatch) {
