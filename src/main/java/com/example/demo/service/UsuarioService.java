@@ -13,11 +13,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UsuarioService {
 
+    private static final String NAO_INFORMADO = "Não informado";
 
     private final UsuarioRepository userRepo;
 
     public UsuarioService(UsuarioRepository userRepo) {
         this.userRepo = userRepo;
+    }
+
+    // null ou string em branco viram null; caso contrario devolve o valor sem espacos nas pontas
+    private String normalizar(String valor) {
+        return (valor == null || valor.isBlank()) ? null : valor.trim();
+    }
+
+    // mesma coisa, mas cai no padrao em vez de null
+    private String normalizar(String valor, String padrao) {
+        String normalizado = normalizar(valor);
+        return normalizado == null ? padrao : normalizado;
     }
 
     @Transactional
@@ -44,8 +56,8 @@ public class UsuarioService {
         newUser.setCep(userPost.cep());
         newUser.setTelefone(userPost.telefone());
         newUser.setEmail(userPost.email());
-        newUser.setNacionalidade(userPost.nacionalidade());
-        newUser.setEstadoCivil(userPost.estadoCivil());
+        newUser.setNacionalidade(normalizar(userPost.nacionalidade(), NAO_INFORMADO));
+        newUser.setEstadoCivil(normalizar(userPost.estadoCivil(), NAO_INFORMADO));
         newUser.setDataNascimento(userPost.dataNascimento());
         userRepo.save(newUser);
     }
@@ -65,13 +77,13 @@ public class UsuarioService {
         UsuarioGet user = userRepo.findaByIdNativeUpdate(id)
                 .orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
 
-        String nome = userPatch.name() == null ? null : userPatch.name().trim();
-        String cpf = userPatch.cpf() == null ? null : userPatch.cpf().trim();
-        String cep = userPatch.cep() == null ? null : userPatch.cep().trim();
-        String telefone = userPatch.telefone() == null ? null : userPatch.telefone().trim();
-        String email = userPatch.email() == null ? null : userPatch.email().trim();
-        String nacionalidade = userPatch.nacionalidade() == null ? null : userPatch.nacionalidade().trim();
-        String estadoCivil = userPatch.estadoCivil() == null ? null : userPatch.estadoCivil().trim();
+        String nome = normalizar(userPatch.name());
+        String cpf = normalizar(userPatch.cpf());
+        String cep = normalizar(userPatch.cep());
+        String telefone = normalizar(userPatch.telefone());
+        String email = normalizar(userPatch.email());
+        String nacionalidade = normalizar(userPatch.nacionalidade());
+        String estadoCivil = normalizar(userPatch.estadoCivil());
 
         if(nome != null){
             Boolean mesmoNome = nome.equals(user.name());

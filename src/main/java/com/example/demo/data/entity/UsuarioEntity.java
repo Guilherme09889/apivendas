@@ -3,7 +3,6 @@ package com.example.demo.data.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Table;
@@ -37,12 +36,10 @@ public class UsuarioEntity {
     @Column(name = "email", nullable = false, length = 50, unique = true)
     private String email;
 
-    @Column(name = "nacionalidade", length = 50, nullable = false) 
-    @ColumnDefault("Não informado") //default na coluna do banco
+    @Column(name = "nacionalidade", length = 50, nullable = false)
     private String nacionalidade = "Não informado"; //default no objeto java
 
     @Column(name = "estado_civil", length = 20, nullable = false)
-    @ColumnDefault("Não informado")
     private String estadoCivil = "Não informado";
 
     @Column(name = "data_nascimento", nullable = false)
@@ -51,16 +48,6 @@ public class UsuarioEntity {
     @Column(name = "ativo", nullable = false)
     @ColumnDefault("true")
     private Boolean ativo = true;
-
-    @PrePersist //default na hora de salvar via jpa
-    public void aplicarNacionalidadeDefautl(){
-        if(this.nacionalidade == null || this.nacionalidade.isEmpty()){ 
-            this.nacionalidade = "Não informado";
-        }
-        if(this.estadoCivil == null || this.estadoCivil.isEmpty()){
-            this.estadoCivil = "Não informado";
-        }
-    }
 
     public UsuarioEntity(){}
 
