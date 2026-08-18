@@ -18,7 +18,7 @@ import org.hibernate.annotations.ColumnDefault;
 public class UsuarioEntity {
         
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "name", nullable = false, length = 100)

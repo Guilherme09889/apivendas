@@ -79,7 +79,8 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
         u.email as email,
         u.nacionalidade as nacionalidade,
         u.estado_civil as estadoCivil,
-        u.data_nascimento as dataNascimento
+        u.data_nascimento as dataNascimento,
+        u.ativo as ativo
             from usuario u 
                 where u.id = :id and u.ativo = true
         """)

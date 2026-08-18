@@ -5,6 +5,8 @@ import com.example.demo.data.repository.UsuarioRepository;
 import com.example.demo.dto.usuario.UsuarioGet;
 import com.example.demo.dto.usuario.UsuarioPatch;
 import com.example.demo.dto.usuario.UsuarioPost;
+import com.example.demo.exception.ConflitoException;
+import com.example.demo.exception.RecursoNaoEncontradoException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,17 +39,17 @@ public class UsuarioService {
 
         Boolean cpfExiste = userRepo.existsByCpfNative(userPost.cpf());
         if (cpfExiste == true) {
-            throw new RuntimeException("CPF já existe");
+            throw new ConflitoException("CPF já cadastrado");
         }
 
         Boolean emailExiste = userRepo.existsByEmailNative(userPost.email());
         if (emailExiste == true) {
-            throw new RuntimeException("Email já existe");
+            throw new ConflitoException("E-mail já cadastrado");
         }
 
         Boolean telefoneExiste = userRepo.existsByTelNative(userPost.telefone());
         if (telefoneExiste == true) {
-            throw new RuntimeException("Telefone ja cadastrado");
+            throw new ConflitoException("Telefone já cadastrado");
         }
 
         UsuarioEntity newUser = new UsuarioEntity();
@@ -64,18 +66,14 @@ public class UsuarioService {
 
     @Transactional(readOnly = true)
     public Page<UsuarioGet> findAllNative(Pageable pageable) {
-        Page<UsuarioGet> users = userRepo.findAllNative(pageable);
-        if (users.isEmpty()) {
-            throw new RuntimeException("Nenhum usuario encontrado");
-        }
-        return users;
+        return userRepo.findAllNative(pageable);
     }
 
     @Transactional
     public void atualizarUsuario(Long id, UsuarioPatch userPatch) {
 
         UsuarioGet user = userRepo.findaByIdNativeUpdate(id)
-                .orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Não existe usuário ativo com id " + id));
 
         String nome = normalizar(userPatch.name());
         String cpf = normalizar(userPatch.cpf());
@@ -88,7 +86,7 @@ public class UsuarioService {
         if(nome != null){
             Boolean mesmoNome = nome.equals(user.name());
             if (mesmoNome == true){
-                throw new RuntimeException("Nome igual ao atual");
+                throw new ConflitoException("Nome igual ao atual");
             }
         }
 
@@ -96,14 +94,14 @@ public class UsuarioService {
             Boolean cpfExiste = userRepo.existsByCpfNative(cpf);
             Boolean cpfMudou = cpf.equals(user.cpf());
             if (cpfExiste == true && cpfMudou == false) {
-                throw new RuntimeException("CPF já existe");
+                throw new ConflitoException("CPF já cadastrado para outro usuário");
             }
         }
 
         if (cep != null){
             Boolean mesmoCep = cep.equals(user.cep());
             if (mesmoCep == true){
-                throw new RuntimeException("CEP igual ao atual");
+                throw new ConflitoException("CEP igual ao atual");
             }
         }
 
@@ -111,7 +109,7 @@ public class UsuarioService {
             Boolean telefoneExiste = userRepo.existsByTelNative(telefone);
             Boolean telefoneMudou = telefone.equals(user.telefone());
             if (telefoneExiste == true && telefoneMudou == false) {
-                throw new RuntimeException("Telefone já existe");
+                throw new ConflitoException("Telefone já cadastrado para outro usuário");
             }
         }
 
@@ -119,7 +117,7 @@ public class UsuarioService {
             Boolean emailExiste = userRepo.existsByEmailNative(email);
             Boolean emailMudou = email.equals(user.email());
             if (emailExiste == true && emailMudou == false) {
-                throw new RuntimeException("Email já existe");
+                throw new ConflitoException("E-mail já cadastrado para outro usuário");
             }
         }
 
@@ -139,7 +137,7 @@ public class UsuarioService {
 
         int linhasAfetadas = userRepo.desativarUsuarioNativo(id);
         if (linhasAfetadas == 0) {
-            throw new RuntimeException("Usuario não encontrado");
+            throw new RecursoNaoEncontradoException("Não existe usuário ativo com id " + id);
         }
     }
 
@@ -147,7 +145,7 @@ public class UsuarioService {
     public void recuperarContaDesativada(Long id){
         boolean usuarioExiste = userRepo.existsByIdNegativoNative(id);
         if(usuarioExiste == false){
-            throw new RuntimeException("Usuario não encontrado");
+            throw new RecursoNaoEncontradoException("Não existe usuário desativado com id " + id);
         }
         userRepo.ativarUsuarioNativo(id);
     }
@@ -155,7 +153,7 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public UsuarioGet fifByIdNative(Long id){
         UsuarioGet user = userRepo.findaByIdNative(id)
-                .orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Não existe usuário ativo com id " + id));
         return user;
     }
 
