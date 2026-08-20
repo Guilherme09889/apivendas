@@ -30,7 +30,6 @@ public record FornecedorPostDTO(
     @Pattern(regexp = "^\\d{8}$", message = "CEP deve ter 8 dígitos")
     String cep,
 
-    @NotBlank(message = "País é obrigatório")
     @Size(max = 50, message = "País deve ter no máximo 50 caracteres")
     String country
 ) {}
