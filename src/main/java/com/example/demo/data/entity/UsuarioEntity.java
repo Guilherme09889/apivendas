@@ -3,6 +3,7 @@ package com.example.demo.data.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Table;
@@ -18,7 +19,8 @@ import org.hibernate.annotations.ColumnDefault;
 public class UsuarioEntity {
         
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usuario_seq")
+    @SequenceGenerator(name = "usuario_seq", sequenceName = "usuario_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "name", nullable = false, length = 100)
