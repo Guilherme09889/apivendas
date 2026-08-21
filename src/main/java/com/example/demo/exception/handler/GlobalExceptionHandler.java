@@ -3,6 +3,7 @@ package com.example.demo.exception.handler;
 import com.example.demo.exception.ConflitoException;
 import com.example.demo.exception.RecursoNaoEncontradoException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import com.example.demo.dto.exception.ErrorResponseDTO;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -25,6 +26,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConflitoException.class)
     public ResponseEntity<ErrorResponseDTO> handleConflictException(ConflitoException ex){
         ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(ex.getMessage(), 409);
+        return ResponseEntity.status(409).body(errorResponseDTO);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleDataIntegrityViolationException(DataIntegrityViolationException ex){
+        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO("Registro já cadastrado", 409);
         return ResponseEntity.status(409).body(errorResponseDTO);
     }
 

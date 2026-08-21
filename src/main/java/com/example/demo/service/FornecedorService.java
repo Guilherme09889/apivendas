@@ -7,6 +7,10 @@ import com.example.demo.exception.ConflitoException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Service
 public class FornecedorService {
@@ -20,40 +24,45 @@ public class FornecedorService {
     @Transactional
     public void postFornecedor(FornecedorPostDTO fornecedorPostDTO){
 
-        String razaoSocial = fornecedorPostDTO.razaoSocial().trim();
-        String cnpj = fornecedorPostDTO.cnpj().trim();
-        String telefone = fornecedorPostDTO.telefone().trim();
-        String cep = fornecedorPostDTO.cep().trim();
+        String razaoSocial = fornecedorPostDTO.razaoSocial();
+        String cnpj = fornecedorPostDTO.cnpj();
+        String telefone = fornecedorPostDTO.telefone();
+        String cep = fornecedorPostDTO.cep();
+        String email = fornecedorPostDTO.email();
+        String site = fornecedorPostDTO.site();
 
-        String country = fornecedorPostDTO.country() == null ?
-                "País não informado" :
-                fornecedorPostDTO.country()
-                .trim();
+        String country = fornecedorPostDTO.country() == null
+                ? "País não informado"
+                : fornecedorPostDTO.country();
 
-        String email = fornecedorPostDTO.email() == null
-                ? null : fornecedorPostDTO.email().trim().toLowerCase();
+        String duplicados = fornecedorRepository
+                .verificarDuplicidadeNative(razaoSocial, cnpj, telefone, email, site);
 
-        String site = fornecedorPostDTO.site() == null
-                ? null : fornecedorPostDTO.site().trim();
+        List<String> camposDuplicados = List.of(duplicados.split(","));
+        List<String> conflitos = new ArrayList<>();
 
-        if(fornecedorRepository.existsByRazaoSocialNative(razaoSocial)){
-            throw new ConflitoException("Razão social já cadastrada");
+        if(camposDuplicados.contains("razaoSocial")){
+            conflitos.add("Razão social já cadastrada");
         }
 
-        if(fornecedorRepository.existsByCnpjNative(cnpj)){
-            throw new ConflitoException("CNPJ já cadastrado");
+        if(camposDuplicados.contains("cnpj")){
+            conflitos.add("CNPJ já cadastrado");
         }
 
-        if(fornecedorRepository.existsByTelNative(telefone)){
-            throw new ConflitoException("Telefone já cadastrado");
+        if(camposDuplicados.contains("telefone")){
+            conflitos.add("Telefone já cadastrado");
         }
 
-        if(email != null && fornecedorRepository.existsByEmailNative(email)){
-            throw new ConflitoException("E-mail já cadastrado");
+        if(camposDuplicados.contains("email")){
+            conflitos.add("E-mail já cadastrado");
         }
 
-        if(site != null && fornecedorRepository.existsBySiteNative(site)){
-            throw new ConflitoException("Site já cadastrado");
+        if(camposDuplicados.contains("site")){
+            conflitos.add("Site já cadastrado");
+        }
+
+        if(!conflitos.isEmpty()){
+            throw new ConflitoException(String.join("; ", conflitos));
         }
 
         FornecedorEntity x = new FornecedorEntity();
@@ -65,6 +74,8 @@ public class FornecedorService {
         x.setCep(cep);
         x.setCountry(country);
         x.setAtivo(true);
+        x.setDataCadastro(LocalDate.now());
+        fornecedorRepository.save(x);
     }
 
 }

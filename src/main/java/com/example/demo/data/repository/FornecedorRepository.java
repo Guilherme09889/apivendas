@@ -10,39 +10,18 @@ import org.springframework.stereotype.Repository;
 public interface FornecedorRepository extends JpaRepository<FornecedorEntity, Long> {
 
     @NativeQuery(value = """
-        select exists(
-        select 1 from fornecedor
-        where razao_social = :razaoSocial)
+        select concat_ws(',',
+        case when exists(select 1 from fornecedor where razao_social = :razaoSocial) then 'razaoSocial' end,
+        case when exists(select 1 from fornecedor where cnpj = :cnpj) then 'cnpj' end,
+        case when exists(select 1 from fornecedor where telefone = :telefone) then 'telefone' end,
+        case when exists(select 1 from fornecedor where email = :email) then 'email' end,
+        case when exists(select 1 from fornecedor where site = :site) then 'site' end)
         """)
-    boolean existsByRazaoSocialNative(@Param("razaoSocial") String razaoSocial);
-
-    @NativeQuery(value = """
-        select exists(
-        select 1 from fornecedor
-        where cnpj = :cnpj)
-        """)
-    boolean existsByCnpjNative(@Param("cnpj") String cnpj);
-
-    @NativeQuery(value = """
-        select exists(
-        select 1 from fornecedor
-        where telefone = :telefone)
-        """)
-    boolean existsByTelNative(@Param("telefone") String telefone);
-
-    @NativeQuery(value = """
-        select exists(
-        select 1 from fornecedor
-        where email = :email)
-        """)
-    boolean existsByEmailNative(@Param("email") String email);
-
-    @NativeQuery(value = """
-        select exists(
-        select 1 from fornecedor
-        where site = :site)
-        """)
-    boolean existsBySiteNative(@Param("site") String site);
-
+    String verificarDuplicidadeNative(
+            @Param("razaoSocial") String razaoSocial,
+            @Param("cnpj") String cnpj,
+            @Param("telefone") String telefone,
+            @Param("email") String email,
+            @Param("site") String site);
 
 }
